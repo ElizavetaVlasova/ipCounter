@@ -13,13 +13,14 @@ public class IpCounter {
     }
 
     public void countIps() {
-        BitSet bitSet = new BitSet();
-        Pattern p = Pattern.compile("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
+        Pattern pattern = Pattern.compile("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
         int count = 0;
+        BitSet lowIndexes = new BitSet();
+        BitSet maxIndexes = new BitSet();
 
         while (scanner.hasNextLine()) {
             String row = scanner.nextLine();
-            Matcher m = p.matcher(row);
+            Matcher m = pattern.matcher(row);
             if (m.find()) {
                 String[] ipAddressInArray = row.split("\\.");
                 long result = 0;
@@ -28,12 +29,15 @@ public class IpCounter {
 
                     result += (Integer.parseInt(ipAddressInArray[i]) % 256 * Math.pow(256, power));
                 }
-                int index = (int) (result >> 5);
+                if (result < Integer.MAX_VALUE) {
+                    lowIndexes.set((int) result);
+                } else {
+                    maxIndexes.set((int) (result - Integer.MAX_VALUE));
+                }
                 count++;
                 System.out.println("Process line: " + count);
-                bitSet.set(index);
             }
         }
-        System.out.println("There are " + bitSet.cardinality() + " unique values");
+        System.out.println("There are " + (lowIndexes.cardinality() + maxIndexes.cardinality()) + " unique values");
     }
 }

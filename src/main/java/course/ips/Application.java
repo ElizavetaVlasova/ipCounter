@@ -16,6 +16,8 @@ public class Application {
             throw new IllegalArgumentException("File doesn't exist");
         }
         File file = new File(filePath);
+        //File file = new File("src/main/resources/test.txt");
+
 
         try (Scanner sc = new Scanner(new FileInputStream(file), StandardCharsets.UTF_8)) {
             IpCounter ipCounter = new IpCounter(sc);
